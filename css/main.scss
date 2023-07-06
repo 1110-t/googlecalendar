@@ -1,0 +1,24 @@
+/* reset */
+@import "reset";
+
+.calendar{
+  max-width: fit-content;
+  margin: auto;
+  &__header{
+    display: flex;
+    justify-content: center;
+  }
+  & table{
+    text-align:center;
+    border-collapse: collapse;
+    & th{
+      padding: 10px;
+    }
+    & td{
+      padding:10px;
+      & p{
+        display: none;
+      }
+    }
+  }
+}

@@ -93,11 +93,18 @@ class Calendar {
     pointer.connect("../Common.php?getoradd=get&start="+y+"-"+m+"-01&end="+y+"-"+m+"-"+lastDay).then(
         function(info){
             console.log(info);
+            let p_day = 0;
+            // カウンター
+            let counter = 0;
             info.forEach((item, i) => {
               let s = new Date(item.start);
               let e = new Date(item.end);
               // カレンダー中の日付を取得する
               let day = s.getDate();
+              // 最初の日だけ取得する
+              if(i == 0){
+                p_day = day;
+              };
               // 日付の要素を取得する
               let ele = document.querySelector(".d"+day);
               ele = ele.closest("td");
@@ -110,13 +117,35 @@ class Calendar {
               // 始まりの時間から差分を要素に格納する
               while(dif_m > 0){
                 let start = ele.querySelector("#h"+s_h);
-                  start.querySelector("[minites=m"+s_m+"]").textContent = '✓';
+                start.querySelector("[minites=m"+s_m+"]").textContent = '✓';
+                counter += 1;
                 s_m += 15;
                 if(s_m == 60){
                   s_m = 0;
                   s_h += 1;
                 };
                 dif_m -= 15;
+              };
+              // 1/4まで◎　1/2 〇 3/4で △ 4/4で×
+              // 総数
+              if(p_day != day){
+                let all = (c.time.end - c.time.start)*4;
+                let ele_ = document.querySelector(".d"+day);
+                ele_ = ele_.closest("td");
+                let cond = document.createElement("div");
+                let judge = counter / all;
+                if(judge < 1/4){
+                  cond.textContent = "◎";
+                } else if(judge < 1/2){
+                  cond.textContent = "〇";
+                } else if(judge < 3/4){
+                  cond.textContent = "△";
+                } else if(judge == 1){
+                  cond.textContent = "×";
+                };
+                ele_.appendChild(cond);
+                counter = 0;
+                p_day = day;
               };
             });
         }
@@ -134,3 +163,67 @@ const nowYear = nowDate.getFullYear().toString();
 let c = new Calendar();
 c.display(nowYear,nowMonth);
 c.create(nowYear,nowMonth);
+
+class Day{
+  constructor(day_element) {
+    this.day_element = day_element;
+    this.time_parse = 4;
+    this.time_length = 120/15;
+  };
+  create(){
+    let all_time = this.day_element.querySelectorAll("span span");
+    let select = document.createElement("select");
+    all_time.forEach((item,i) => {
+      let counter = 0;
+      for (var j = 0; j < this.time_length; j++) {
+        if(all_time[i+j+1] == undefined){
+          let end_time = document.createElement("div");
+          let h = item.parentNode.getAttribute("id").replace("h","");
+          let m = item.getAttribute("minites").replace("m","");
+          end_time.setAttribute("hour",h);
+          end_time.setAttribute("minite",m);
+          select.appendChild(end_time);
+          break;
+        };
+        if(item.textContent == "" && all_time[i+j+1].textContent == ""){
+            counter += 1;
+            if(counter == 8){
+              counter = 0;
+              let h = item.parentNode.getAttribute("id").replace("h","");
+              let m = item.getAttribute("minites").replace("m","");
+              if(!select.querySelector("[hours=h"+h+"]")){
+                let opt = document.createElement("option");
+                opt.setAttribute("value",h);
+                opt.setAttribute("hours","h"+h);
+                opt.setAttribute("minites",m);
+                select.appendChild(opt);
+              } else {
+                let opt = select.querySelector("[hours=h"+h+"]");
+                let minites = opt.getAttribute("minites");
+                minites = minites+" "+m;
+                opt.setAttribute("minites",minites);
+              };
+              console.log(item.parentNode.getAttribute("id").replace("h","") + ":" + item.getAttribute("minites").replace("m",""));
+            };
+        } else {
+          let end_time = document.createElement("div");
+          let h = item.parentNode.getAttribute("id").replace("h","");
+          let m = item.getAttribute("minites").replace("m","");
+          end_time.setAttribute("hour",h);
+          end_time.setAttribute("minite",m);
+          select.appendChild(end_time);
+        };
+      };
+    });
+    console.log(select);
+  };
+};
+
+let calendar_body = document.querySelector(".calendar__body");
+calendar_body.addEventListener("click",function(e){
+  let day_element = e.target.closest("td");
+  if(!day_element.classList.contains("disabled")){
+    let day = new Day(day_element);
+    day.create();
+  };
+});

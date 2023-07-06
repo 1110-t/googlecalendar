@@ -13,6 +13,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" defer src="./js/fetch.js"></script>
     <script type="text/javascript" defer src="./js/calendar.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/main.min.css">
   </head>
   <body>
     <div class="calendar">
