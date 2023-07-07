@@ -169,6 +169,7 @@ class Day{
     this.day_element = day_element;
     this.time_parse = 4;
     this.time_length = 120/15;
+    this.selector = "";
   };
   create(){
     let all_time = this.day_element.querySelectorAll("span span");
@@ -176,16 +177,8 @@ class Day{
     all_time.forEach((item,i) => {
       let counter = 0;
       for (var j = 0; j < this.time_length; j++) {
-        if(all_time[i+j+1] == undefined){
-          let end_time = document.createElement("div");
-          let h = item.parentNode.getAttribute("id").replace("h","");
-          let m = item.getAttribute("minites").replace("m","");
-          end_time.setAttribute("hour",h);
-          end_time.setAttribute("minite",m);
-          select.appendChild(end_time);
-          break;
-        };
-        if(item.textContent == "" && all_time[i+j+1].textContent == ""){
+        if(all_time[i+j+1] != undefined){
+          if(item.textContent == "" && all_time[i+j+1].textContent == ""){
             counter += 1;
             if(counter == 8){
               counter = 0;
@@ -194,6 +187,7 @@ class Day{
               if(!select.querySelector("[hours=h"+h+"]")){
                 let opt = document.createElement("option");
                 opt.setAttribute("value",h);
+                opt.textContent = h;
                 opt.setAttribute("hours","h"+h);
                 opt.setAttribute("minites",m);
                 select.appendChild(opt);
@@ -205,17 +199,28 @@ class Day{
               };
               console.log(item.parentNode.getAttribute("id").replace("h","") + ":" + item.getAttribute("minites").replace("m",""));
             };
-        } else {
+          };
+        };
+      };
+      if(item.textContent != ""){
+        let h = item.parentNode.getAttribute("id").replace("h","");
+        let m = item.getAttribute("minites").replace("m","");
+        if(!select.querySelector("[hour=h"+h+"]")){
           let end_time = document.createElement("div");
-          let h = item.parentNode.getAttribute("id").replace("h","");
-          let m = item.getAttribute("minites").replace("m","");
-          end_time.setAttribute("hour",h);
-          end_time.setAttribute("minite",m);
+          end_time.setAttribute("hour","h"+h);
+          end_time.setAttribute("minite","m"+m);
           select.appendChild(end_time);
         };
       };
     });
-    console.log(select);
+    let calendar__footer = document.querySelector(".calendar__footer");
+    select.classList.add("hourSelector");
+    select.addEventListener("change",this.hourChange);
+    calendar__footer.appendChild(select);
+  };
+  hourChange(){
+    console.log(this);
+    let val = this.selectedOptions[0].value;
   };
 };
 

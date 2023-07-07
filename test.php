@@ -24,6 +24,9 @@
       </div>
       <div class="calendar__body">
       </div>
+      <div class="calendar__footer">
+        
+      </div>
     </div>
   </body>
 </html>
