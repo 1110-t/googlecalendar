@@ -164,12 +164,15 @@ let c = new Calendar();
 c.display(nowYear,nowMonth);
 c.create(nowYear,nowMonth);
 
+let startHour = 0;
 class Day{
   constructor(day_element) {
     this.day_element = day_element;
     this.time_parse = 4;
     this.time_length = 120/15;
-    this.selector = "";
+    this.span = 2;
+    this.startHour = 0;
+    this.startMinites = 0;
   };
   create(){
     let all_time = this.day_element.querySelectorAll("span span");
@@ -214,15 +217,48 @@ class Day{
       };
     });
     let calendar__footer = document.querySelector(".calendar__footer");
+    calendar__footer.innerHTML = "";
     select.classList.add("hourSelector");
     select.addEventListener("change",this.hourChange);
     calendar__footer.appendChild(select);
   };
   hourChange(){
     console.log(this);
+    // 選択されたオプションの値を取得する
     let val = this.selectedOptions[0].value;
+    startHour = val;
+    // 適応する分数を取得する
+    let minites = this.selectedOptions[0].getAttribute("minites");
+    minites = minites.split(" ");
+    let select = document.createElement("select");
+    select.classList.add("miniteSelector");
+    minites.forEach((minite, i) => {
+      select.innerHTML += "<option value='"+minite+"'>"+minite+"</option>";
+    });
+    let calendar__footer = document.querySelector(".calendar__footer");
+    select.addEventListener("change",Day.prototype.miniteChange);
+    calendar__footer.appendChild(select);
+  };
+  miniteChange(){
+    let val = this.selectedOptions[0].value;
+    let startMinites = val;
+    // 開始できる時刻を設定する
+    let minStart = startHour + 2;
+    let selector = document.querySelector(".hourSelector");
+    // 終了時刻を新しいセレクタ―として作成する
+    let select = document.createElement("select");
+    select.classList.add("endHourSelector");
+    // 最小時間の時間と分数で予定があるかどうかチェックする
+    for (var i = startHour; i < 24; i++) {
+      let temp = select.querySelector("[hour=h"+i+"]");
+      if(!temp){
+        select.innerHTML += "<option value="+i+"></option>"
+      };
+    };
+    console.log(start);
   };
 };
+
 
 let calendar_body = document.querySelector(".calendar__body");
 calendar_body.addEventListener("click",function(e){
